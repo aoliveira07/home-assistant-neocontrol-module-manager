@@ -72,7 +72,7 @@ def load_settings() -> Settings:
         mqtt_port = 1883
     return Settings(
         data_dir=Path(os.getenv("APP_DATA_DIR", "./data")),
-        app_version=os.getenv("APP_VERSION", "0.1.0-alpha.1"),
+        app_version=os.getenv("APP_VERSION", "0.1.0-alpha.2"),
         app_host=os.getenv("APP_HOST", "127.0.0.1"),
         app_port=int(os.getenv("APP_PORT", "8099")),
         broadcast_address=broadcast_address,

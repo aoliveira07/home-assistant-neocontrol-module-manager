@@ -3,102 +3,74 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#10242b" />
     <title>Neocontrol Module Manager</title>
-    <link rel="stylesheet" href="/static/style.css" />
+    <base href="./" />
+    <link rel="stylesheet" href="static/style.css" />
   </head>
   <body>
-    <header class="topbar">
-      <div>
-        <p class="eyebrow">HOME ASSISTANT APP</p>
-        <h1>Neocontrol Module Manager</h1>
-      </div>
-      <div id="global-status" class="status-pill">Carregando…</div>
-    </header>
-
-    <nav class="tabs" aria-label="Navegação">
-      <button class="tab active" data-tab="dashboard">Dashboard</button>
-      <button class="tab" data-tab="scenes">Scenes</button>
-      <button class="tab" data-tab="modules">Modules</button>
-      <button class="tab" data-tab="lab">Protocol Lab</button>
-      <button class="tab" data-tab="diagnostics">Diagnostics</button>
-    </nav>
-
-    <main>
-      <section id="dashboard" class="panel active">
-        <div class="hero-card">
+    <div class="app-shell">
+      <header class="app-header">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true">N</div>
           <div>
-            <p class="eyebrow">VISÃO GERAL</p>
-            <h2>Bridge local para Module Classic</h2>
-            <p>UDP direto na LAN, com MQTT Discovery opcional. Nenhum pacote é enviado automaticamente.</p>
+            <div class="brand-kicker">SMART HOUSE · INTEGRAÇÃO LOCAL</div>
+            <h1>Neocontrol Module Manager</h1>
+            <p>Module Classic · UDP direto e MQTT Discovery</p>
           </div>
-          <button class="secondary" onclick="refreshAll()">Atualizar</button>
         </div>
-        <div id="status-grid" class="card-grid"></div>
-        <div class="two-columns">
-          <article class="card"><h3>Último RX</h3><pre id="last-rx">—</pre></article>
-          <article class="card"><h3>Último TX</h3><pre id="last-tx">—</pre></article>
-        </div>
-      </section>
+        <div class="version-chip"><span>APP</span><strong id="app-version">—</strong></div>
+      </header>
 
-      <section id="scenes" class="panel">
-        <div class="section-heading"><div><p class="eyebrow">COMANDOS MOMENTÂNEOS</p><h2>Scenes</h2></div></div>
-        <form id="scene-form" class="form-card">
-          <label>Nome<input name="name" required maxlength="120" placeholder="Tudo apagado" /></label>
-          <label>Número da cena<input name="scene_number" type="number" min="0" max="65535" required /></label>
-          <label class="checkbox"><input name="enabled" type="checkbox" checked /> Habilitada</label>
-          <button class="primary">Cadastrar cena</button>
-        </form>
-        <div id="scene-list" class="item-list"></div>
-      </section>
+      <nav class="main-nav" aria-label="Navegação principal">
+        <button class="nav-item active" data-tab="dashboard">Visão geral</button>
+        <button class="nav-item" data-tab="scenes">Cenas</button>
+        <button class="nav-item" data-tab="modules">Módulos</button>
+        <button class="nav-item" data-tab="lab">Protocol Lab</button>
+        <button class="nav-item" data-tab="diagnostics">Diagnóstico</button>
+      </nav>
 
-      <section id="modules" class="panel">
-        <div class="section-heading"><div><p class="eyebrow">CADASTRO EXPERIMENTAL</p><h2>Modules</h2></div></div>
-        <div class="notice">A descoberta automática e os mapas de Relay/Dimmer ainda não estão confirmados. Cadastre apenas módulos para organizar capturas e testes manuais.</div>
-        <form id="module-form" class="form-card">
-          <label>Nome amigável<input name="name" required maxlength="120" placeholder="Relé sala" /></label>
-          <label>Nome lógico Neocontrol<input name="logical_name" required maxlength="120" placeholder="RELE01" /></label>
-          <label>Tipo<select name="module_type"><option>unknown</option><option>relay</option><option>dimmer</option><option>switch</option><option>task</option></select></label>
-          <label>8 bytes HEX (opcional)<input name="raw_hex" maxlength="23" placeholder="41 42 43 44 45 46 47 48" /></label>
-          <label class="wide">Observações<textarea name="notes" maxlength="2000"></textarea></label>
-          <button class="primary">Cadastrar módulo</button>
-        </form>
-        <div id="module-list" class="item-list"></div>
-      </section>
+      <main>
+        <section id="dashboard" class="panel active">
+          <div class="page-heading">
+            <div><div class="section-kicker">VISÃO GERAL</div><h2>Bridge local para Module Classic</h2><p>Monitore o transporte local e acesse rapidamente as cenas configuradas.</p></div>
+            <button class="button secondary" id="refresh-button">Atualizar</button>
+          </div>
+          <div class="status-grid">
+            <article class="status-card" id="udp-status-card"><div class="status-icon">▤</div><div class="status-copy"><span>Transporte local</span><strong>UDP Neocontrol</strong><small id="udp-status">Carregando…</small></div></article>
+            <article class="status-card" id="mqtt-status-card"><div class="status-icon">⌂</div><div class="status-copy"><span>Home Assistant MQTT</span><strong>Discovery</strong><small id="mqtt-status">Carregando…</small></div></article>
+            <article class="status-card" id="bridge-status-card"><div class="status-icon">◇</div><div class="status-copy"><span>Bridge</span><strong>Neocontrol Classic</strong><small id="bridge-status">Carregando…</small></div></article>
+          </div>
+          <div class="section-heading"><div><div class="section-kicker">COMANDOS MOMENTÂNEOS</div><h2>Cenas</h2></div><span class="count-label" id="scene-count">—</span></div>
+          <div id="dashboard-scene-list" class="entity-list"></div>
+          <div class="quick-panels"><article class="info-card"><span>Último RX</span><pre id="last-rx">Nenhum pacote recebido</pre></article><article class="info-card"><span>Último TX</span><pre id="last-tx">Nenhum pacote transmitido</pre></article></div>
+        </section>
 
-      <section id="lab" class="panel">
-        <div class="section-heading"><div><p class="eyebrow">CAPTURA E ENVIO MANUAL</p><h2>Protocol Lab</h2></div><label class="toggle"><input id="lab-toggle" type="checkbox" /> Habilitar</label></div>
-        <div id="lab-warning" class="warning">Experimental — pode acionar equipamentos. Habilite somente diante da instalação física e confirme o aviso.</div>
-        <div class="card capture-card">
-          <div class="section-heading compact"><h3>Captura UDP</h3><div><button id="capture-toggle" class="secondary">Pausar visualização</button><button id="clear-capture" class="secondary">Limpar</button><a class="secondary link-button" href="/api/packets/export?format=json">JSON</a><a class="secondary link-button" href="/api/packets/export?format=csv">CSV</a></div></div>
-          <div class="filters"><input id="filter-ip" placeholder="Filtrar IP" /><input id="filter-length" type="number" min="0" placeholder="Tamanho" /><input id="filter-prefix" placeholder="Prefixo HEX" /></div>
-          <div class="table-wrap"><table><thead><tr><th>Hora</th><th>Dir.</th><th>IP</th><th>Len</th><th>Payload HEX</th></tr></thead><tbody id="packet-table"></tbody></table></div>
-        </div>
-        <div class="two-columns">
-          <form id="individual-form" class="form-card">
-            <h3>Individual</h3>
-            <label>Nome do módulo<input name="module_name" placeholder="RELE01" /></label>
-            <label>Raw HEX sobrescreve nome<input name="module_raw_hex" placeholder="41 42 43 44 45 46 47 48" /></label>
-            <label>Padding<select name="padding_mode"><option value="nul">NUL</option><option value="space">Espaço</option><option value="raw_hex">Raw HEX</option></select></label>
-            <div class="inline-fields"><label>Function<input name="function" type="number" min="0" max="255" value="0" required /></label><label>Subfunction<input name="subfunction" type="number" min="0" max="255" value="0" required /></label></div>
-            <p id="individual-preview" class="code-preview">14 00 — — — — — — — — 00 00 FF</p>
-            <button class="primary">Enviar individual</button>
-          </form>
-          <form id="raw-form" class="form-card">
-            <h3>Raw</h3>
-            <label>HEX payload<textarea name="hex_payload" required placeholder="02 00 00 FF"></textarea></label>
-            <div class="warning small">Experimental — pode acionar equipamentos.</div>
-            <button class="danger">Enviar raw</button>
-          </form>
-        </div>
-      </section>
+        <section id="scenes" class="panel">
+          <div class="page-heading"><div><div class="section-kicker">COMANDOS MOMENTÂNEOS</div><h2>Scenes</h2><p>Cadastre cenas seguras e publique-as como botões no Home Assistant.</p></div></div>
+          <form id="scene-form" class="form-card"><div class="form-card-title"><span class="card-icon">◉</span><div><h3>Nova cena</h3><p>O frame de cena é confirmado no protocolo.</p></div></div><label>Nome<input name="name" required maxlength="120" placeholder="Tudo apagado" /></label><label>Número<input name="scene_number" type="number" min="0" max="61439" required placeholder="0" /></label><label class="check-label"><input name="enabled" type="checkbox" checked /> Habilitada</label><button class="button primary" type="submit">Cadastrar cena</button></form>
+          <div id="scene-list" class="entity-list"></div>
+        </section>
 
-      <section id="diagnostics" class="panel">
-        <div class="section-heading"><div><p class="eyebrow">SUPORTE</p><h2>Diagnostics</h2></div><button id="download-diagnostics" class="secondary">Exportar relatório</button></div>
-        <pre id="diagnostics-json" class="diagnostics-output">Carregando…</pre>
-      </section>
-    </main>
+        <section id="modules" class="panel">
+          <div class="page-heading"><div><div class="section-kicker">CADASTRO EXPERIMENTAL</div><h2>Modules</h2><p>Organize módulos e nomes de 8 bytes enquanto o protocolo individual é capturado.</p></div></div>
+          <div class="notice">A descoberta automática e os mapas de Relay/Dimmer permanecem pendentes da captura física. Nenhum mapeamento é presumido.</div>
+          <form id="module-form" class="form-card"><div class="form-card-title"><span class="card-icon">▤</span><div><h3>Novo módulo experimental</h3><p>O cadastro não transmite nenhum pacote.</p></div></div><label>Nome amigável<input name="name" required maxlength="120" placeholder="Relé sala" /></label><label>Nome lógico Neocontrol<input name="logical_name" required maxlength="120" placeholder="RELE01" /></label><label>Tipo<select name="module_type"><option>unknown</option><option>relay</option><option>dimmer</option><option>switch</option><option>task</option></select></label><label>8 bytes HEX (opcional)<input name="raw_hex" maxlength="23" placeholder="41 42 43 44 45 46 47 48" /></label><label class="wide">Observações<textarea name="notes" maxlength="2000"></textarea></label><button class="button primary" type="submit">Cadastrar módulo</button></form>
+          <div id="module-list" class="entity-list"></div>
+        </section>
+
+        <section id="lab" class="panel">
+          <div class="page-heading"><div><div class="section-kicker">CAPTURA E ENVIO MANUAL</div><h2>Protocol Lab</h2><p>Ferramenta de engenharia para captura física do protocolo.</p></div><label class="switch-label"><input id="lab-toggle" type="checkbox" /><span class="switch"></span><span>Habilitar Lab</span></label></div>
+          <div class="warning">Experimental — pode acionar equipamentos. Todos os envios são manuais; não existe brute force, varredura automática ou discovery ativo.</div>
+          <article class="surface-card capture-card"><div class="card-heading"><div><h3>Captura UDP</h3><p>Listener integral na porta 8760.</p></div><div class="card-actions"><button id="capture-toggle" class="button secondary">Pausar</button><button id="clear-capture" class="button secondary">Limpar</button><a class="button secondary" href="api/packets/export?format=json">JSON</a><a class="button secondary" href="api/packets/export?format=csv">CSV</a></div></div><div class="filters"><input id="filter-ip" placeholder="Filtrar IP" /><input id="filter-length" type="number" min="0" placeholder="Tamanho" /><input id="filter-prefix" placeholder="Prefixo HEX" /></div><div class="table-wrap"><table><thead><tr><th>Hora</th><th>Dir.</th><th>IP</th><th>Len</th><th>Payload HEX</th></tr></thead><tbody id="packet-table"></tbody></table></div></article>
+          <div class="two-column-layout"><form id="individual-form" class="form-card surface-card"><div class="form-card-title"><span class="card-icon">◇</span><div><h3>Individual</h3><p>Envelope confirmado; function/subfunction experimentais.</p></div></div><label>Nome do módulo<input name="module_name" placeholder="RELE01" /></label><label>Raw HEX sobrescreve nome<input name="module_raw_hex" placeholder="41 42 43 44 45 46 47 48" /></label><label>Padding<select name="padding_mode"><option value="nul">NUL</option><option value="space">Espaço</option><option value="raw_hex">Raw HEX</option></select></label><div class="inline-fields"><label>Function<input name="function" type="number" min="0" max="255" value="0" required /></label><label>Subfunction<input name="subfunction" type="number" min="0" max="255" value="0" required /></label></div><p id="individual-preview" class="code-preview">14 00 — — — — — — — — 00 00 FF</p><button class="button primary" type="submit">Enviar individual</button></form><form id="raw-form" class="form-card surface-card"><div class="form-card-title"><span class="card-icon">✦</span><div><h3>Raw HEX</h3><p>Envie um payload manual para a rede local.</p></div></div><label>HEX payload<textarea name="hex_payload" required placeholder="02 00 00 FF"></textarea></label><div class="warning compact">Experimental — pode acionar equipamentos.</div><button class="button danger" type="submit">Enviar raw</button></form></div>
+        </section>
+
+        <section id="diagnostics" class="panel"><div class="page-heading"><div><div class="section-kicker">SUPORTE</div><h2>Diagnostics</h2><p>Estado não sensível do App, módulos, cenas e transporte.</p></div><button id="download-diagnostics" class="button secondary">Exportar relatório</button></div><pre id="diagnostics-json" class="diagnostics-output">Carregando…</pre></section>
+      </main>
+      <footer class="app-footer"><span>Neocontrol Module Manager · engenharia local</span><span>Home Assistant App</span></footer>
+    </div>
     <div id="toast" class="toast" role="status"></div>
-    <script src="/static/app.js"></script>
+    <script src="static/app.js"></script>
   </body>
 </html>
-

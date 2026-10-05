@@ -1,7 +1,7 @@
 name: "Neocontrol Module Manager"
 slug: "neocontrol-module-manager"
 description: "Local manager for Neocontrol Module Classic systems"
-version: "0.1.0-alpha.1"
+version: "0.1.0-alpha.2"
 stage: experimental
 startup: application
 boot: auto

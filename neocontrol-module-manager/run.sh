@@ -2,7 +2,7 @@
 set -e
 
 export APP_DATA_DIR="/data"
-export APP_VERSION="${BUILD_VERSION:-0.1.0-alpha.1}"
+export APP_VERSION="${BUILD_VERSION:-0.1.0-alpha.2}"
 export APP_HOST="0.0.0.0"
 export APP_PORT="8099"
 

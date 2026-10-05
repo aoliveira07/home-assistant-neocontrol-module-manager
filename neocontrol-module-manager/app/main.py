@@ -32,7 +32,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title="Neocontrol Module Manager",
-    version="0.1.0-alpha.1",
+    version="0.1.0-alpha.2",
     docs_url="/api/docs",
     redoc_url=None,
     lifespan=lifespan,
