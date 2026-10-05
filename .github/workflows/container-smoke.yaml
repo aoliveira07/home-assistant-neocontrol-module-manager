@@ -15,14 +15,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Pull published alpha image
-        run: docker pull ghcr.io/aoliveira07/home-assistant-neocontrol-module-manager:0.1.0-alpha.1
+        run: docker pull ghcr.io/aoliveira07/home-assistant-neocontrol-module-manager:0.1.0-alpha.2
       - name: Start container
         run: |
           docker run -d --name neocontrol-smoke \
             -p 8099:8099 \
             -e APP_HOST=0.0.0.0 \
             -e APP_PORT=8099 \
-            ghcr.io/aoliveira07/home-assistant-neocontrol-module-manager:0.1.0-alpha.1
+            ghcr.io/aoliveira07/home-assistant-neocontrol-module-manager:0.1.0-alpha.2
       - name: Exercise Ingress, UDP and Protocol Lab endpoints
         shell: bash
         run: |
