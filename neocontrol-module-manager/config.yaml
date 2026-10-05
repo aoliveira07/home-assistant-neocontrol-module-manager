@@ -12,6 +12,7 @@ arch:
 
 image: ghcr.io/aoliveira07/home-assistant-neocontrol-module-manager
 apparmor: true
+init: false
 
 host_network: true
 
