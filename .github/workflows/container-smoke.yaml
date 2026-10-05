@@ -36,6 +36,10 @@ jobs:
           test "$(python -c 'import json; print(json.load(open("/tmp/health.json"))["ok"])')" = "True"
           curl --fail --silent http://127.0.0.1:8099/ >/tmp/index.html
           grep -q "Neocontrol Module Manager" /tmp/index.html
+          curl --fail --silent http://127.0.0.1:8099/static/style.css >/tmp/style.css
+          curl --fail --silent http://127.0.0.1:8099/static/app.js >/tmp/app.js
+          grep -q "app-shell" /tmp/style.css
+          grep -q "document.baseURI" /tmp/app.js
           curl --fail --silent -X POST http://127.0.0.1:8099/api/scenes \
             -H 'Content-Type: application/json' \
             -d '{"name":"Smoke scene","scene_number":0,"enabled":true}' >/tmp/scene.json
