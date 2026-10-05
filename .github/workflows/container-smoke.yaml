@@ -1,0 +1,68 @@
+name: Published container smoke test
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pull published alpha image
+        run: docker pull ghcr.io/aoliveira07/home-assistant-neocontrol-module-manager:0.1.0-alpha.1
+      - name: Start container
+        run: |
+          docker run -d --name neocontrol-smoke \
+            -p 8099:8099 \
+            -e APP_HOST=0.0.0.0 \
+            -e APP_PORT=8099 \
+            ghcr.io/aoliveira07/home-assistant-neocontrol-module-manager:0.1.0-alpha.1
+      - name: Exercise Ingress, UDP and Protocol Lab endpoints
+        shell: bash
+        run: |
+          set -euo pipefail
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:8099/health >/tmp/health.json; then
+              break
+            fi
+            sleep 2
+          done
+          test "$(python -c 'import json; print(json.load(open("/tmp/health.json"))["ok"])')" = "True"
+          curl --fail --silent http://127.0.0.1:8099/ >/tmp/index.html
+          grep -q "Neocontrol Module Manager" /tmp/index.html
+          curl --fail --silent -X POST http://127.0.0.1:8099/api/scenes \
+            -H 'Content-Type: application/json' \
+            -d '{"name":"Smoke scene","scene_number":0,"enabled":true}' >/tmp/scene.json
+          scene_id=$(python -c 'import json; print(json.load(open("/tmp/scene.json"))["id"])')
+          curl --fail --silent -X POST "http://127.0.0.1:8099/api/scenes/${scene_id}/test" >/tmp/scene-send.json
+          curl --fail --silent -X POST http://127.0.0.1:8099/api/settings/protocol-lab \
+            -H 'Content-Type: application/json' \
+            -d '{"enabled":true,"confirmed":true}' >/tmp/lab.json
+          curl --fail --silent -X POST http://127.0.0.1:8099/api/protocol/send-individual \
+            -H 'Content-Type: application/json' \
+            -d '{"module_name":"ABCDEFGH","function":1,"subfunction":2,"padding_mode":"nul"}' >/tmp/individual.json
+          curl --fail --silent -X POST http://127.0.0.1:8099/api/protocol/send-raw \
+            -H 'Content-Type: application/json' \
+            -d '{"hex_payload":"02 00 00 FF"}' >/tmp/raw.json
+          curl --fail --silent http://127.0.0.1:8099/api/packets >/tmp/packets.json
+          curl --fail --silent http://127.0.0.1:8099/api/packets/export?format=json >/tmp/capture.json
+          python - <<'PY'
+          import json
+          packets = json.load(open('/tmp/packets.json'))
+          assert any(item['direction'] == 'tx' for item in packets)
+          assert len(json.load(open('/tmp/capture.json'))) >= 3
+          print('container smoke checks passed')
+          PY
+      - name: Show container logs
+        if: always()
+        run: docker logs neocontrol-smoke
+      - name: Stop container
+        if: always()
+        run: docker rm -f neocontrol-smoke
+
