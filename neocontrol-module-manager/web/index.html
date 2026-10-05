@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Neocontrol Module Manager</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">HOME ASSISTANT APP</p>
+        <h1>Neocontrol Module Manager</h1>
+      </div>
+      <div id="global-status" class="status-pill">Carregando…</div>
+    </header>
+
+    <nav class="tabs" aria-label="Navegação">
+      <button class="tab active" data-tab="dashboard">Dashboard</button>
+      <button class="tab" data-tab="scenes">Scenes</button>
+      <button class="tab" data-tab="modules">Modules</button>
+      <button class="tab" data-tab="lab">Protocol Lab</button>
+      <button class="tab" data-tab="diagnostics">Diagnostics</button>
+    </nav>
+
+    <main>
+      <section id="dashboard" class="panel active">
+        <div class="hero-card">
+          <div>
+            <p class="eyebrow">VISÃO GERAL</p>
+            <h2>Bridge local para Module Classic</h2>
+            <p>UDP direto na LAN, com MQTT Discovery opcional. Nenhum pacote é enviado automaticamente.</p>
+          </div>
+          <button class="secondary" onclick="refreshAll()">Atualizar</button>
+        </div>
+        <div id="status-grid" class="card-grid"></div>
+        <div class="two-columns">
+          <article class="card"><h3>Último RX</h3><pre id="last-rx">—</pre></article>
+          <article class="card"><h3>Último TX</h3><pre id="last-tx">—</pre></article>
+        </div>
+      </section>
+
+      <section id="scenes" class="panel">
+        <div class="section-heading"><div><p class="eyebrow">COMANDOS MOMENTÂNEOS</p><h2>Scenes</h2></div></div>
+        <form id="scene-form" class="form-card">
+          <label>Nome<input name="name" required maxlength="120" placeholder="Tudo apagado" /></label>
+          <label>Número da cena<input name="scene_number" type="number" min="0" max="65535" required /></label>
+          <label class="checkbox"><input name="enabled" type="checkbox" checked /> Habilitada</label>
+          <button class="primary">Cadastrar cena</button>
+        </form>
+        <div id="scene-list" class="item-list"></div>
+      </section>
+
+      <section id="modules" class="panel">
+        <div class="section-heading"><div><p class="eyebrow">CADASTRO EXPERIMENTAL</p><h2>Modules</h2></div></div>
+        <div class="notice">A descoberta automática e os mapas de Relay/Dimmer ainda não estão confirmados. Cadastre apenas módulos para organizar capturas e testes manuais.</div>
+        <form id="module-form" class="form-card">
+          <label>Nome amigável<input name="name" required maxlength="120" placeholder="Relé sala" /></label>
+          <label>Nome lógico Neocontrol<input name="logical_name" required maxlength="120" placeholder="RELE01" /></label>
+          <label>Tipo<select name="module_type"><option>unknown</option><option>relay</option><option>dimmer</option><option>switch</option><option>task</option></select></label>
+          <label>8 bytes HEX (opcional)<input name="raw_hex" maxlength="23" placeholder="41 42 43 44 45 46 47 48" /></label>
+          <label class="wide">Observações<textarea name="notes" maxlength="2000"></textarea></label>
+          <button class="primary">Cadastrar módulo</button>
+        </form>
+        <div id="module-list" class="item-list"></div>
+      </section>
+
+      <section id="lab" class="panel">
+        <div class="section-heading"><div><p class="eyebrow">CAPTURA E ENVIO MANUAL</p><h2>Protocol Lab</h2></div><label class="toggle"><input id="lab-toggle" type="checkbox" /> Habilitar</label></div>
+        <div id="lab-warning" class="warning">Experimental — pode acionar equipamentos. Habilite somente diante da instalação física e confirme o aviso.</div>
+        <div class="card capture-card">
+          <div class="section-heading compact"><h3>Captura UDP</h3><div><button id="capture-toggle" class="secondary">Pausar visualização</button><button id="clear-capture" class="secondary">Limpar</button><a class="secondary link-button" href="/api/packets/export?format=json">JSON</a><a class="secondary link-button" href="/api/packets/export?format=csv">CSV</a></div></div>
+          <div class="filters"><input id="filter-ip" placeholder="Filtrar IP" /><input id="filter-length" type="number" min="0" placeholder="Tamanho" /><input id="filter-prefix" placeholder="Prefixo HEX" /></div>
+          <div class="table-wrap"><table><thead><tr><th>Hora</th><th>Dir.</th><th>IP</th><th>Len</th><th>Payload HEX</th></tr></thead><tbody id="packet-table"></tbody></table></div>
+        </div>
+        <div class="two-columns">
+          <form id="individual-form" class="form-card">
+            <h3>Individual</h3>
+            <label>Nome do módulo<input name="module_name" placeholder="RELE01" /></label>
+            <label>Raw HEX sobrescreve nome<input name="module_raw_hex" placeholder="41 42 43 44 45 46 47 48" /></label>
+            <label>Padding<select name="padding_mode"><option value="nul">NUL</option><option value="space">Espaço</option><option value="raw_hex">Raw HEX</option></select></label>
+            <div class="inline-fields"><label>Function<input name="function" type="number" min="0" max="255" value="0" required /></label><label>Subfunction<input name="subfunction" type="number" min="0" max="255" value="0" required /></label></div>
+            <p id="individual-preview" class="code-preview">14 00 — — — — — — — — 00 00 FF</p>
+            <button class="primary">Enviar individual</button>
+          </form>
+          <form id="raw-form" class="form-card">
+            <h3>Raw</h3>
+            <label>HEX payload<textarea name="hex_payload" required placeholder="02 00 00 FF"></textarea></label>
+            <div class="warning small">Experimental — pode acionar equipamentos.</div>
+            <button class="danger">Enviar raw</button>
+          </form>
+        </div>
+      </section>
+
+      <section id="diagnostics" class="panel">
+        <div class="section-heading"><div><p class="eyebrow">SUPORTE</p><h2>Diagnostics</h2></div><button id="download-diagnostics" class="secondary">Exportar relatório</button></div>
+        <pre id="diagnostics-json" class="diagnostics-output">Carregando…</pre>
+      </section>
+    </main>
+    <div id="toast" class="toast" role="status"></div>
+    <script src="/static/app.js"></script>
+  </body>
+</html>
+

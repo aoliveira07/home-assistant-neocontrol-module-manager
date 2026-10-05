@@ -1,0 +1,4 @@
+# The default Home Assistant AppArmor profile is sufficient for this app.
+# No custom profile is selected in config.yaml; this file is retained as the
+# place for a least-privilege profile if future diagnostics require one.
+

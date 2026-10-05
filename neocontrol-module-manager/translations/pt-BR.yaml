@@ -1,0 +1,20 @@
+configuration:
+  broadcast_address:
+    name: Endereço de broadcast UDP
+    description: Destino IPv4 usado para transmitir frames Neocontrol.
+  udp_port:
+    name: Porta UDP
+    description: Porta UDP local do Neocontrol.
+  capture_buffer_size:
+    name: Tamanho do buffer de captura
+    description: Quantidade de pacotes UDP recentes mantidos em memória.
+  enable_protocol_lab:
+    name: Habilitar Protocol Lab
+    description: Permite envio experimental individual e raw após confirmação na interface.
+  debug_protocol:
+    name: Logs de protocolo
+    description: Registra payloads e detalhes do protocolo.
+  discovery_prefix:
+    name: Prefixo MQTT Discovery
+    description: Prefixo MQTT Discovery do Home Assistant.
+

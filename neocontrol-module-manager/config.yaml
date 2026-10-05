@@ -1,0 +1,40 @@
+name: "Neocontrol Module Manager"
+slug: "neocontrol-module-manager"
+description: "Local manager for Neocontrol Module Classic systems"
+version: "0.1.0-alpha.1"
+stage: experimental
+startup: application
+boot: auto
+
+arch:
+  - amd64
+  - aarch64
+
+image: ghcr.io/aoliveira07/home-assistant-neocontrol-module-manager
+
+host_network: true
+
+ingress: true
+ingress_port: 8099
+panel_icon: mdi:home-lightning-bolt
+panel_title: Neocontrol
+
+services:
+  - mqtt:want
+
+options:
+  broadcast_address: "255.255.255.255"
+  udp_port: 8760
+  capture_buffer_size: 500
+  enable_protocol_lab: false
+  debug_protocol: false
+  discovery_prefix: "homeassistant"
+
+schema:
+  broadcast_address: str
+  udp_port: port
+  capture_buffer_size: int(1,5000)
+  enable_protocol_lab: bool
+  debug_protocol: bool
+  discovery_prefix: str
+

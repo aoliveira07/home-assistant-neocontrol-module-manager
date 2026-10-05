@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "neocontrol-module-manager"
+version = "0.1.0a1"
+description = "Local UDP and MQTT bridge for Neocontrol Module Classic systems"
+requires-python = ">=3.11"
+dependencies = [
+  "fastapi>=0.115,<1",
+  "uvicorn[standard]>=0.30,<1",
+  "aiomqtt>=2.3,<3",
+]
+
+[tool.setuptools]
+package-dir = {"" = "neocontrol-module-manager"}
+
+[tool.setuptools.packages.find]
+where = ["neocontrol-module-manager"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["neocontrol-module-manager"]
+
