@@ -20,6 +20,6 @@ package-dir = {"" = "neocontrol-module-manager"}
 where = ["neocontrol-module-manager"]
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
-pythonpath = ["neocontrol-module-manager"]
+testpaths = ["tests", "smart_house_scale/tests"]
+pythonpath = ["neocontrol-module-manager", "."]
 

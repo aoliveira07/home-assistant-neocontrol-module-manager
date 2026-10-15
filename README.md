@@ -46,3 +46,10 @@ O envio individual e raw é bloqueado por padrão. Habilite o Protocol Lab na pr
 - [Documentação do App](neocontrol-module-manager/DOCS.md)
 - [Changelog](neocontrol-module-manager/CHANGELOG.md)
 
+## Smart House Scale — SH-SCALE
+
+Este repositório também contém o V1 local da balança Xiaomi para a família Smart
+House. A integração HA, o módulo FastAPI/PostgreSQL, a migration reversível, a UI
+e o checklist de homologação estão em [smart_house_scale](smart_house_scale/README.md).
+O app existente acima permanece independente e não teve seu SQLite migrado.
+
