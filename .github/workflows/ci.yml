@@ -13,9 +13,9 @@ jobs:
         with:
           python-version: "3.12"
       - name: Install test dependencies
-        run: python -m pip install --upgrade pip pytest fastapi httpx2
+        run: python -m pip install --upgrade pip pytest fastapi httpx httpx2
       - name: Run unit tests
         run: pytest
       - name: Compile Python sources
-        run: python -m compileall -q neocontrol-module-manager/app smart_house_scale/backend/app smart_house_scale/custom_components tests smart_house_scale/tests
+        run: python -m compileall -q neocontrol-module-manager/app smart_house_scale/addon_app smart_house_scale/backend/app smart_house_scale/custom_components tests smart_house_scale/tests
 
